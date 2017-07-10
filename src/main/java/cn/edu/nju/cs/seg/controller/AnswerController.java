@@ -119,7 +119,7 @@ public class AnswerController {
             HttpServletRequest request,
             @RequestParam("description") String description,
             @RequestParam("photo") List<MultipartFile> files,
-            @RequestParam("audio") MultipartFile audio)
+            @RequestParam("audio") List<MultipartFile> audio)
             throws Exception {
 
         System.out.println(description);
@@ -175,11 +175,11 @@ public class AnswerController {
             } else {
                 String audioDir = request.getSession().getServletContext().getRealPath("/")
                         + "audios/";
-                String md5 = MD5Util.getMultipartFileMD5(audio);
-                String originalFilename = audio.getOriginalFilename();
+                String md5 = MD5Util.getMultipartFileMD5(audio.get(0));
+                String originalFilename = audio.get(0).getOriginalFilename();
                 String suffix = originalFilename.substring(
                         originalFilename.lastIndexOf("."));
-                audio.transferTo(new File(audioDir + md5 + suffix));
+                audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                 answer = new Answer(ServerConfig.AUDIO_DIR + md5 + suffix,
                         user, question, Answer.TYPE_AUDIO);
             }

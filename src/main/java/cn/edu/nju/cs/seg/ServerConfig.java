@@ -46,7 +46,7 @@ public class ServerConfig {
 
     public static final String AUDIO_DIR =
             SERVER_BASE_PROTOCOL + "://"
-                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + "/audio/";
+                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + "/audios/";
 
     public static final String LUCENE_INDEX_DIRECTORY = "lucene/index";
 

@@ -30,20 +30,36 @@ public class JPushUtil {
     }
 
     public static void sendPush(PushPayload payload) {
-        try {
-            JPushClient jpushClient =
-                    new JPushClient(ServerConfig.MASTER_SECRET,
-                            ServerConfig.APP_KEY, null, ClientConfig.getInstance());
-            PushResult result = jpushClient.sendPush(payload);
-            System.out.println("Got result - " + result);
-
-        } catch (APIConnectionException e) {
-            // Connection error, should retry later
-            System.out.println("JPush: Connection error, should retry later");
-
-        } catch (APIRequestException e) {
-            // Should review the error, and fix the request
-            System.out.println("JPush: Should review the error, and fix the request");
-        }
+        PushRunnable push = new PushRunnable(payload);
+        new Thread(push).start();
     }
+
+    private static class PushRunnable implements Runnable {
+        PushPayload pushPayload;
+
+        public PushRunnable(PushPayload pushPayload) {
+            this.pushPayload = pushPayload;
+        }
+
+        @Override
+        public void run() {
+            try {
+                JPushClient jpushClient =
+                        new JPushClient(ServerConfig.MASTER_SECRET,
+                                ServerConfig.APP_KEY, null, ClientConfig.getInstance());
+                PushResult result = jpushClient.sendPush(pushPayload);
+                System.out.println("Got result - " + result);
+
+            } catch (APIConnectionException e) {
+                // Connection error, should retry later
+                System.out.println("JPush: Connection error, should retry later");
+
+            } catch (APIRequestException e) {
+                // Should review the error, and fix the request
+                System.out.println("JPush: Should review the error, and fix the request");
+            }
+        }
+
+    }
+
 }

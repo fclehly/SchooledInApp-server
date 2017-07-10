@@ -260,7 +260,7 @@ public class QuestionController {
             HttpServletRequest request,
             @RequestParam("description") String description,
             @RequestParam("photo") List<MultipartFile> files,
-            @RequestParam("audio") MultipartFile audio)
+            @RequestParam("audio") List<MultipartFile> audio)
             throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
@@ -311,11 +311,11 @@ public class QuestionController {
                     } else {
                         String audioDir = request.getSession().getServletContext().getRealPath("/")
                                 + "audios/";
-                        String md5 = MD5Util.getMultipartFileMD5(audio);
-                        String originalFilename = audio.getOriginalFilename();
+                        String md5 = MD5Util.getMultipartFileMD5(audio.get(0));
+                        String originalFilename = audio.get(0).getOriginalFilename();
                         String suffix = originalFilename.substring(
                                 originalFilename.lastIndexOf("."));
-                        audio.transferTo(new File(audioDir + md5 + suffix));
+                        audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                         question = new Question(questionTitle,
                                 ServerConfig.AUDIO_DIR + md5 + suffix,
                                 user, studio, Question.TYPE_AUDIO);
@@ -366,7 +366,7 @@ public class QuestionController {
             @PathVariable("questionId") int questionId,
             @RequestParam("description") String description,
             @RequestParam("photo") List<MultipartFile> files,
-            @RequestParam("audio") MultipartFile audio)
+            @RequestParam("audio") List<MultipartFile> audio)
             throws IOException, NoSuchAlgorithmException {
         Question question = QuestionService.findQuestionById(questionId);
 
@@ -420,11 +420,11 @@ public class QuestionController {
                     String audioDir = request.getSession()
                             .getServletContext().getRealPath("/")
                             + "audios/";
-                    String md5 = MD5Util.getMultipartFileMD5(audio);
-                    String originalFilename = audio.getOriginalFilename();
+                    String md5 = MD5Util.getMultipartFileMD5(audio.get(0));
+                    String originalFilename = audio.get(0).getOriginalFilename();
                     String suffix = originalFilename.substring(
                             originalFilename.lastIndexOf("."));
-                    audio.transferTo(new File(audioDir + md5 + suffix));
+                    audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                     answer = new Answer(ServerConfig.AUDIO_DIR + md5 + suffix,
                             user, question, Answer.TYPE_AUDIO);
                 }

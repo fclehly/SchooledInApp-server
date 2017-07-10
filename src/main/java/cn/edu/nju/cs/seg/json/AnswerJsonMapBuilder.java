@@ -31,6 +31,9 @@ public class AnswerJsonMapBuilder implements JsonMapResponseBuilder {
                         + "/users/" + answer.getAnswerer().getId())
                 .append("answerer_avatar_url", ServerConfig.SERVER_BASE_URL
                         + "/avatars/" + answer.getAnswerer().getAvatar())
+                .append("question_title", answer.getQuestion().getTitle())
+                .append("question_url", ServerConfig.SERVER_BASE_URL
+                        + "/questions/" + answer.getQuestion().getId())
                 .append("comments_url", ServerConfig.SERVER_BASE_URL
                         + "/answers/" + answer.getId() + "/comments")
                 .append("created_at", answer.getCreatedAt())
@@ -40,9 +43,6 @@ public class AnswerJsonMapBuilder implements JsonMapResponseBuilder {
 
     @Override
     public Map<String, Object> getComplexMap() {
-        Map<String, Object> map = getSimpleMap();
-        map.put("question_title", answer.getQuestion().getTitle());
-        map.put("question_url", ServerConfig.SERVER_BASE_URL + "/questions/" + answer.getQuestion().getId());
-        return map;
+        return getSimpleMap();
     }
 }

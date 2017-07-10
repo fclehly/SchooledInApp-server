@@ -489,7 +489,7 @@ public class StudioController {
             HttpServletRequest request,
             @RequestParam("description") String description,
             @RequestParam("photo") List<MultipartFile> files,
-            @RequestParam("audio") MultipartFile audio)
+            @RequestParam("audio") List<MultipartFile> audio)
             throws IOException, NoSuchAlgorithmException {
         Studio studio = StudioService.findStudioById(studioId);
         if (studio != null) {
@@ -537,11 +537,11 @@ public class StudioController {
                 } else {
                     String imageDir = request.getSession().getServletContext().getRealPath("/")
                             + "audios/";
-                    String md5 = MD5Util.getMultipartFileMD5(audio);
-                    String originalFilename = audio.getOriginalFilename();
+                    String md5 = MD5Util.getMultipartFileMD5(audio.get(0));
+                    String originalFilename = audio.get(0).getOriginalFilename();
                     String suffix = originalFilename.substring(
                             originalFilename.lastIndexOf("."));
-                    audio.transferTo(new File(imageDir + md5 + suffix));
+                    audio.get(0).transferTo(new File(imageDir + md5 + suffix));
                     essay = new Essay(essayTitle, ServerConfig.AUDIO_DIR + md5 + suffix,
                             studio, Essay.TYPE_AUDIO);
                 }
