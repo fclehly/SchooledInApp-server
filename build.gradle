@@ -22,13 +22,15 @@ repositories {
 
 tomcat {
     httpPort = 8080
-    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
-    ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
+    httpsPort = 8443
+    enableSSL = true
+//    httpProtocol = 'org.apache.coyote.http11.Http11AprProtocol'
+//    ajpProtocol  = 'org.apache.coyote.ajp.AjpAprProtocol'
 }
 
 dependencies {
 
-    def tomcatVersion = '8.5.16'
+    def tomcatVersion = '8.0.45'
     def springVersion = '4.3.7.RELEASE'
     def luceneVersion = '6.6.0'
     def hibernateVersion = '5.2.8.Final'
@@ -93,10 +95,13 @@ dependencies {
     compile "org.apache.lucene:lucene-core:${luceneVersion}"
     compile "org.apache.lucene:lucene-queryparser:${luceneVersion}"
 
+    compile "org.apache.tomcat:tomcat-coyote:${tomcatVersion}"
 
     tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
             "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+            
+
 
 
 

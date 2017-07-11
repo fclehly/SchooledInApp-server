@@ -216,7 +216,7 @@ public class EssayController {
                 && studio.getManager().equals(manager)
                 && studioManagerPassword != null
                 && studioManagerPassword.equals(manager.getPassword())) {
-            if (essayTitle != null && essayContent != null) {
+            if (essayTitle != null) {
 
                 Essay essay = null;
                 if ("text".equals(type)) {
@@ -260,7 +260,7 @@ public class EssayController {
                         .getMap();
                 return new ResponseEntity<Map<String, Object>>(map, HttpStatus.CREATED);
             } else {
-                throw new BusinessException("Required essay title or content", HttpStatus.BAD_REQUEST);
+                throw new BusinessException("Required essay", HttpStatus.BAD_REQUEST);
             }
 
         } else {

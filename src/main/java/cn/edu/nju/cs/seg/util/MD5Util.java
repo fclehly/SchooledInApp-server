@@ -40,7 +40,6 @@ public class MD5Util {
         if (file != null && !file.isFile()) {
             return null;
         }
-
         MessageDigest digest = null;
         FileInputStream in = null;
         byte buffer[] = new byte[1024];
