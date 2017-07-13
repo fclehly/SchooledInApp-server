@@ -1,5 +1,6 @@
 package cn.edu.nju.cs.seg.controller;
 
+import cn.edu.nju.cs.seg.ServerConfig;
 import cn.edu.nju.cs.seg.pojo.Avatar;
 import cn.edu.nju.cs.seg.service.AvatarService;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,9 @@ public class MediaController {
             @PathVariable("avatarId") int avatarId) {
         Avatar avatar = AvatarService.findAvatarById(avatarId);
         if (avatarId == 1 || avatar == null) { //默认头像
-            return "/avatars/1.png";
+            return ServerConfig.AVATAR_DIR + "1.png";
         } else {
-            return "/avatars/" + avatar.getMd5() + "." + avatar.getSuffix();
+            return ServerConfig.AVATAR_DIR + "/avatars/" + avatar.getMd5() + "." + avatar.getSuffix();
         }
     }
 }

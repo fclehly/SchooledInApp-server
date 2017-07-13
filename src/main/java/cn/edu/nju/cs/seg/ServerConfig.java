@@ -48,6 +48,10 @@ public class ServerConfig {
             SERVER_BASE_PROTOCOL + "://"
                     + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + "/audios/";
 
+
+    public static final String AVATAR_DIR =
+            "/avatars/";
+
     public static final String LUCENE_INDEX_DIRECTORY = "lucene/index";
 
     public static final boolean INIT_DATA = true;
