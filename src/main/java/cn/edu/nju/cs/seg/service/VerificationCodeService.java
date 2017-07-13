@@ -8,19 +8,19 @@ import cn.edu.nju.cs.seg.pojo.VerificationCode;
  */
 public class VerificationCodeService {
     private static VerificationCodeDaoImpl dao = new VerificationCodeDaoImpl();
-    public void add(VerificationCode code) {
+    public static void add(VerificationCode code) {
         dao.add(code);
     }
 
-    public VerificationCode findCodeByEmailOrPhone(String emailOrPhone) {
+    public static VerificationCode findCodeByEmailOrPhone(String emailOrPhone) {
         return dao.getCodeByEmailOrPhone(emailOrPhone);
     }
 
-    public void remove(String emailOrPhone) {
+    public static void remove(String emailOrPhone) {
         dao.remove(emailOrPhone);
     }
 
-    public void update(VerificationCode code) {
+    public static void update(VerificationCode code) {
         dao.update(code);
     }
 }

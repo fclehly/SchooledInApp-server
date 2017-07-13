@@ -6,13 +6,20 @@ import cn.edu.nju.cs.seg.service.*;
 import cn.edu.nju.cs.seg.util.LuceneIndexUtil;
 import cn.edu.nju.cs.seg.util.MD5Util;
 import org.apache.lucene.index.IndexWriter;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Random;
 
@@ -20,7 +27,7 @@ import java.util.Random;
  * Created by fwz on 2017/6/26.
  */
 @Service
-public class StartupListener implements ApplicationListener<ContextRefreshedEvent> {
+public class StartupListener {
 
     private final String[] usernames = {
             "Alistar", "Blitzcrank",
@@ -249,18 +256,72 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
             "iOS 性能监控方案 Wedjat（上篇）"
     };
 
-    private boolean isTableOk = false;
+//    private boolean isTableOk = false;
+
 
     @PostConstruct
-    public void onApplicationEvent() {
+    public void beforeApplicationStart()
+            throws SQLException, IOException, ClassNotFoundException {
+        preparing();
+        createDataBase();
+        initData();
         System.out.println("----------------------------------");
-        System.out.println("       Server Startup");
+        System.out.println("       Server Started!");
+        System.out.println("----------------------------------");
+
+    }
+
+    public void preparing() {
+        System.out.println("----------------------------------");
+        System.out.println("       Preparing...");
         System.out.println("----------------------------------");
     }
 
+    public void createDataBase()
+            throws IOException, ClassNotFoundException, SQLException {
+        URL url = Thread.currentThread().getContextClassLoader()
+                .getResource("hibernate.cfg.xml");
+//        System.out.println(url.getPath());
+        File hibernateConfig = new File(url.getPath());
+        if (hibernateConfig.exists()) {
+            Document document = Jsoup.parse(hibernateConfig, "utf8");
+            Elements properties = document.getElementsByTag("property");
+            String username = "";
+            String password = "";
+            String dbUrl = "jdbc:mysql://localhost:3306" +
+                    "?useSSL=true";
+            String driver = "com.mysql.jdbc.Driver";
+            for (Element property : properties) {
+                if ("connection.username".equals(property.attr("name"))) {
+                    username = property.html();
+                }
+                if ("connection.password".equals(property.attr("name"))) {
+                    password = property.html();
+                }
+                if ("connection.driver_class".equals(property.attr("name"))) {
+                    driver = property.html();
+                }
+            }
+            System.out.println("DataBase UserName: " + username);
+            System.out.println("DataBase Password: " + password);
+            System.out.println("Driver: " + driver);
+            Connection connection = null;
+            Class.forName(driver);
+            connection = DriverManager.getConnection(dbUrl, username, password);
+            Statement statement = connection.createStatement();
+            statement.execute("CREATE DATABASE IF NOT EXISTS seg DEFAULT CHARSET=UTF8;");
+            connection.close();
+        }
+
+    }
+
+
     public void initData() throws IOException {
 
-        if (isTableOk && ServerConfig.INIT_DATA && UserService.findAllUsers().size() == 0) {
+        System.out.println("----------------------------------");
+        System.out.println("       Init Data.....");
+        System.out.println("----------------------------------");
+        if (ServerConfig.INIT_DATA && UserService.findAllUsers().size() == 0) {
             ServerConfig.NOTIFICATION = false;
             //add users
             Random random = new Random(System.currentTimeMillis());
@@ -361,17 +422,8 @@ public class StartupListener implements ApplicationListener<ContextRefreshedEven
             ServerConfig.NOTIFICATION = true;
 
         }
-        isTableOk = true;
+
+
     }
 
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-
-        try {
-            initData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

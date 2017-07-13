@@ -23,8 +23,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -201,9 +201,15 @@ public class UserControllerTests {
 
         InputStream inputStream =
                 this.getClass().getResourceAsStream("/images/ic_launcher.png");
+        URL url = this.getClass().getResource("/images/ic_launcher.png");
+        System.out.println(inputStream == null);
+//        File file = new File("");
+//        for (String str : file.list()) {
+//            System.out.println(str);
+//        }
 //        FileInputStream fis = new FileInputStream("/images/ic_laucher.png");
         System.out.println(inputStream.toString());
-        FileInputStream fis = (FileInputStream) inputStream;
+//        FileInputStream fis = (FileInputStream) inputStream;
 //        MockMultipartFile multipartFile =
 //                new MockMultipartFile("photopath", "/images/ic_laucher.png",
 //                        "image/png", fis);

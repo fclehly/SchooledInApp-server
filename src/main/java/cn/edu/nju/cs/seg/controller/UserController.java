@@ -52,7 +52,7 @@ public class UserController {
 //    private static UserService UserService = new UserService();
 //    private static QuestionService QuestionService = new QuestionService();
 //    private static AnswerService AnswerService = new AnswerService();
-    private static VerificationCodeService verificationCodeService = new VerificationCodeService();
+//    private static VerificationCodeService verificationCodeService = new VerificationCodeService();
 
     /**
      * GET /users
@@ -448,14 +448,14 @@ public class UserController {
             long retainUntil = System.currentTimeMillis() + 1000 * 60 * 10;
             try {
                 EmailUtil.sendEmail(email, "校园问答验证码", code);
-                VerificationCode verificationCode = verificationCodeService.findCodeByEmailOrPhone(email);
+                VerificationCode verificationCode = VerificationCodeService.findCodeByEmailOrPhone(email);
                 if (verificationCode == null) {
                     verificationCode = new VerificationCode(email, code, retainUntil);
-                    verificationCodeService.add(verificationCode);
+                    VerificationCodeService.add(verificationCode);
                 } else {
                     verificationCode.setCode(code);
                     verificationCode.setRetainUtil(retainUntil);
-                    verificationCodeService.update(verificationCode);
+                    VerificationCodeService.update(verificationCode);
                 }
                 Map<String, Object> m = new JsonMapBuilder()
                         .append("retain_until", System.currentTimeMillis() + 1000 * 60 * 10)
@@ -527,7 +527,7 @@ public class UserController {
                 && email.contains("@")
                 && email.contains("nju.edu.cn")
                 && password != null && password.length() > 0) {
-            VerificationCode code = verificationCodeService.findCodeByEmailOrPhone(email);
+            VerificationCode code = VerificationCodeService.findCodeByEmailOrPhone(email);
             String verificationCode = (String) bodyMap.get("verification_code");
             System.out.println(verificationCode);
             System.out.println(code.getCode());

@@ -7,6 +7,10 @@ apply plugin: 'com.bmuschko.tomcat'
 
 sourceCompatibility = 1.8
 
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
 buildscript {
     repositories {
         jcenter()
@@ -21,7 +25,7 @@ repositories {
 }
 
 tomcat {
-    httpPort = 8080
+//    httpPort = 8080
     httpsPort = 8443
     enableSSL = true
 //    httpProtocol = 'org.apache.coyote.http11.Http11AprProtocol'
