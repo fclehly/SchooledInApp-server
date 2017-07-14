@@ -152,7 +152,7 @@ public class AnswerController {
                 String content = (String) descriptionMap.get("content");
 
                 String imageDir = request.getSession().getServletContext().getRealPath("/")
-                        + "image/";
+                        + "images/";
                 List<String> names = new ArrayList<String>();
                 for (MultipartFile file : files) {
                     String md5 = MD5Util.getMultipartFileMD5(file);
@@ -169,7 +169,7 @@ public class AnswerController {
                 for (Element image : images) {
                     String oldSrc = image.attr("src");
                     image.attr("src",
-                            ServerConfig.IMAGE_DIR + names.get(i++));
+                            ServerConfig.IMAGES_BASE_URL + names.get(i++));
                 }
                 answer = new Answer(document.toString(), user, question, Answer.TYPE_TEXT);
             } else {
@@ -180,7 +180,7 @@ public class AnswerController {
                 String suffix = originalFilename.substring(
                         originalFilename.lastIndexOf("."));
                 audio.get(0).transferTo(new File(audioDir + md5 + suffix));
-                answer = new Answer(ServerConfig.AUDIO_DIR + md5 + suffix,
+                answer = new Answer(ServerConfig.AUDIOS_BASE_URL + md5 + suffix,
                         user, question, Answer.TYPE_AUDIO);
             }
             int id = AnswerService.add(answer);

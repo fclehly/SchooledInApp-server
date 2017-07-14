@@ -286,7 +286,7 @@ public class QuestionController {
                     if (type.equals("text")) {
                         String questionContent = (String) descriptionMap.get("question_content");
                         String imageDir = request.getSession().getServletContext().getRealPath("/")
-                                + "image/";
+                                + "images/";
                         List<String> names = new ArrayList<String>();
                         for (MultipartFile file : files) {
                             String md5 = MD5Util.getMultipartFileMD5(file);
@@ -303,7 +303,7 @@ public class QuestionController {
                         for (Element image : images) {
                             String oldSrc = image.attr("src");
                             image.attr("src",
-                                    ServerConfig.IMAGE_DIR + names.get(i++));
+                                    ServerConfig.IMAGES_BASE_URL + names.get(i++));
                         }
 
                         question = new Question(questionTitle,
@@ -317,7 +317,7 @@ public class QuestionController {
                                 originalFilename.lastIndexOf("."));
                         audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                         question = new Question(questionTitle,
-                                ServerConfig.AUDIO_DIR + md5 + suffix,
+                                ServerConfig.IMAGES_BASE_URL + md5 + suffix,
                                 user, studio, Question.TYPE_AUDIO);
                     }
 
@@ -392,7 +392,7 @@ public class QuestionController {
                     if (content != null && content.length() > 0) {
 
                         String imageDir = request.getSession().getServletContext().getRealPath("/")
-                                + "image/";
+                                + "images/";
                         List<String> names = new ArrayList<String>();
                         for (MultipartFile file : files) {
                             String md5 = MD5Util.getMultipartFileMD5(file);
@@ -409,7 +409,7 @@ public class QuestionController {
                         for (Element image : images) {
                             String oldSrc = image.attr("src");
                             image.attr("src",
-                                    ServerConfig.IMAGE_DIR + names.get(i++));
+                                    ServerConfig.IMAGES_BASE_URL + names.get(i++));
                         }
                         answer = new Answer(document.toString(),
                                 user, question, Answer.TYPE_TEXT);
@@ -425,7 +425,7 @@ public class QuestionController {
                     String suffix = originalFilename.substring(
                             originalFilename.lastIndexOf("."));
                     audio.get(0).transferTo(new File(audioDir + md5 + suffix));
-                    answer = new Answer(ServerConfig.AUDIO_DIR + md5 + suffix,
+                    answer = new Answer(ServerConfig.AUDIOS_BASE_URL + md5 + suffix,
                             user, question, Answer.TYPE_AUDIO);
                 }
                 int id = AnswerService.add(answer);

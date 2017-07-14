@@ -512,7 +512,7 @@ public class StudioController {
                 if ("text".equals(type)) {
 
                     String imageDir = request.getSession().getServletContext().getRealPath("/")
-                            + "image/";
+                            + "images/";
                     List<String> names = new ArrayList<String>();
                     for (MultipartFile file : files) {
                         String md5 = MD5Util.getMultipartFileMD5(file);
@@ -529,7 +529,7 @@ public class StudioController {
                     for (Element image : images) {
                         String oldSrc = image.attr("src");
                         image.attr("src",
-                                ServerConfig.IMAGE_DIR + names.get(i++));
+                                ServerConfig.IMAGES_BASE_URL + names.get(i++));
                     }
 
                     essay = new Essay(essayTitle != null ? essayTitle : "",
@@ -542,7 +542,7 @@ public class StudioController {
                     String suffix = originalFilename.substring(
                             originalFilename.lastIndexOf("."));
                     audio.get(0).transferTo(new File(imageDir + md5 + suffix));
-                    essay = new Essay(essayTitle, ServerConfig.AUDIO_DIR + md5 + suffix,
+                    essay = new Essay(essayTitle, ServerConfig.AUDIOS_BASE_URL + md5 + suffix,
                             studio, Essay.TYPE_AUDIO);
                 }
                 int essayId = EssayService.add(essay);

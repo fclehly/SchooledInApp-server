@@ -632,7 +632,7 @@ public class UserController {
                     Question question = null;
                     if ("text".equals(type)) {
                         String imageDir = request.getSession().getServletContext().getRealPath("/")
-                                + "image/";
+                                + "images/";
                         List<String> names = new ArrayList<String>();
                         for (MultipartFile file : files) {
                             String md5 = MD5Util.getMultipartFileMD5(file);
@@ -649,7 +649,7 @@ public class UserController {
                         for (Element image : images) {
                             String oldSrc = image.attr("src");
                             image.attr("src",
-                                    ServerConfig.IMAGE_DIR + names.get(i++));
+                                    ServerConfig.IMAGES_BASE_URL + names.get(i++));
                         }
 
 
@@ -664,7 +664,7 @@ public class UserController {
                                 originalFilename.lastIndexOf("."));
                         audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                         question = new Question(questionTitle,
-                                ServerConfig.AUDIO_DIR + md5 + suffix,
+                                ServerConfig.AUDIOS_BASE_URL + md5 + suffix,
                                 u, studio, Question.TYPE_AUDIO);
                     }
                     int questionId = QuestionService.add(question);

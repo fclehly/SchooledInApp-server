@@ -25,7 +25,8 @@ import java.util.*;
 @RequestMapping("/api")
 public class OtherController {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(OtherController.class);
+    protected static final Logger LOG =
+            LoggerFactory.getLogger(OtherController.class);
 
 
     /**
@@ -272,10 +273,8 @@ public class OtherController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> getTest() {
-//        ApplicationContext context =
-//                new ClassPathXmlApplicationContext("applicationContext.xml");
-//        User user1 = (User) context.getBean("user1");
-//        System.out.println(user1.getUsername());
+        LOG.error("1");
+        System.out.println("111");
         System.out.println(ServerContext.logins.toString());
         return new ResponseEntity<Map<String, Object>>(HttpStatus.OK);
 

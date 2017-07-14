@@ -11,5 +11,6 @@ public class ServerConfigTests {
     public void testGetProperties() throws Exception {
         System.out.println(ServerConfig.APP_KEY);
         System.out.println(ServerConfig.SERVER_BASE_URL);
+//        System.out.println(ServerConfig);
     }
 }

@@ -36,18 +36,24 @@ public class ServerConfig {
     public static final String SERVER_BASE_PATH =
             properties.getProperty("server.base");
 
+    public static final String SERVER_PACKAGE =
+            properties.getProperty("server.package");
+
     public static final String SERVER_BASE_URL =
             SERVER_BASE_PROTOCOL + "://" + SERVER_BASE_HOME + ":"
-                    + SERVER_BASE_PORT + SERVER_BASE_PATH;
+                    + SERVER_BASE_PORT + SERVER_PACKAGE + SERVER_BASE_PATH;
 
-    public static final String IMAGE_DIR =
+    public static final String IMAGES_BASE_URL =
             SERVER_BASE_PROTOCOL + "://"
-                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + "/image/";
+                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + SERVER_PACKAGE + "/images/";
 
-    public static final String AUDIO_DIR =
+    public static final String AUDIOS_BASE_URL =
             SERVER_BASE_PROTOCOL + "://"
-                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + "/audios/";
+                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + SERVER_PACKAGE + "/audios/";
 
+    public static final String AVATARS_BASE_URL =
+            SERVER_BASE_PROTOCOL + "://"
+                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + SERVER_PACKAGE + "/audios/";
 
     public static final String AVATAR_DIR =
             "/avatars/";

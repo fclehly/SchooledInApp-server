@@ -29,8 +29,8 @@ public class AnswerJsonMapBuilder implements JsonMapResponseBuilder {
                         + "/answers/" + answer.getId())
                 .append("answerer_url", ServerConfig.SERVER_BASE_URL
                         + "/users/" + answer.getAnswerer().getId())
-                .append("answerer_avatar_url", ServerConfig.SERVER_BASE_URL
-                        + "/avatars/" + answer.getAnswerer().getAvatar())
+                .append("answerer_avatar_url", ServerConfig.AVATARS_BASE_URL
+                        + answer.getAnswerer().getAvatar())
                 .append("question_title", answer.getQuestion().getTitle())
                 .append("question_url", ServerConfig.SERVER_BASE_URL
                         + "/questions/" + answer.getQuestion().getId())

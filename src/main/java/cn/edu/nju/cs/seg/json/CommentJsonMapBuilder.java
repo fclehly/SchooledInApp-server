@@ -26,8 +26,8 @@ public class CommentJsonMapBuilder implements JsonMapResponseBuilder {
                         + "/comments/" + comment.getId())
                 .append("commenter_url", ServerConfig.SERVER_BASE_URL
                         + "/users/" + comment.getUser().getId())
-                .append("commenter_avatar_url", ServerConfig.SERVER_BASE_URL
-                        + "/avatars/" + comment.getUser().getAvatar())
+                .append("commenter_avatar_url", ServerConfig.AVATARS_BASE_URL
+                         + comment.getUser().getAvatar())
                 .append("created_at", comment.getCreatedAt())
                 .getMap();
         return map;

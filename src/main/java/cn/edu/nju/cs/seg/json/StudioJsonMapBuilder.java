@@ -28,8 +28,8 @@ public class StudioJsonMapBuilder implements JsonMapResponseBuilder {
                 .append("essays", studio.getEssaysNumber())
                 .append("url", ServerConfig.SERVER_BASE_URL
                         + "/studios/" + studio.getId())
-                .append("avatar_url", ServerConfig.SERVER_BASE_URL
-                        + "/avatars/" + studio.getAvatar())
+                .append("avatar_url", ServerConfig.AVATARS_BASE_URL
+                        + studio.getAvatar())
                 .append("bio", studio.getBio())
                 .getMap();
 
@@ -47,8 +47,8 @@ public class StudioJsonMapBuilder implements JsonMapResponseBuilder {
                 .append("name", studio.getName())
                 .append("url", ServerConfig.SERVER_BASE_URL + "/studios/" + studio.getId())
                 .append("manager", studio.getManager().getUsername())
-                .append("avatar_url", ServerConfig.SERVER_BASE_URL
-                        + "/avatars/" + studio.getAvatar())
+                .append("avatar_url", ServerConfig.AVATARS_BASE_URL
+                        + studio.getAvatar())
                 .append("manager_url", ServerConfig.SERVER_BASE_URL
                         + "/users/" + studio.getManager().getId())
                 .append("manager_avatar_url", ServerConfig.SERVER_BASE_URL
