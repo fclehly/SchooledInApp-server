@@ -13,7 +13,7 @@
   <body>
   <h1>SchooledInApp Server</h1><br/>
 
-  <img height="400dp" src="/image/miku_swd3e2.jpg"/>
+  <img height="400dp" src="/images/ic_laucher.jpg"/>
   <p style="font-size: xx-small">画师:swd3e2; pixiv_id: 58740472</p>
   </body>
 </html>

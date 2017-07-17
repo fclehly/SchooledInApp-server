@@ -29,7 +29,7 @@ public class EssayJsonMapBuilder implements JsonMapResponseBuilder {
                         + "/essays/" + essay.getId())
                 .append("studio_url", ServerConfig.SERVER_BASE_URL
                         + "/studios/" + essay.getStudio().getId())
-                .append("comment_url", ServerConfig.SERVER_BASE_URL
+                .append("comments_url", ServerConfig.SERVER_BASE_URL
                         + "/essays/" + essay.getId() + "/comments")
                 .append("created_at", essay.getCreatedAt())
                 .getMap();
@@ -57,7 +57,7 @@ public class EssayJsonMapBuilder implements JsonMapResponseBuilder {
                         + "/studios/" + essay.getStudio().getId())
                 .append("studio_avatar_url", ServerConfig.SERVER_BASE_URL
                         + "/avatars/" + essay.getStudio().getAvatar())
-                .append("comment_url", ServerConfig.SERVER_BASE_URL
+                .append("comments_url", ServerConfig.SERVER_BASE_URL
                         + "/essays/" + essay.getId() + "/comments")
                 .append("created_at", essay.getCreatedAt())
                 .getMap();

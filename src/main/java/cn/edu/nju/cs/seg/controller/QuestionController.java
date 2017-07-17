@@ -317,7 +317,7 @@ public class QuestionController {
                                 originalFilename.lastIndexOf("."));
                         audio.get(0).transferTo(new File(audioDir + md5 + suffix));
                         question = new Question(questionTitle,
-                                ServerConfig.IMAGES_BASE_URL + md5 + suffix,
+                                ServerConfig.AUDIOS_BASE_URL + md5 + suffix,
                                 user, studio, Question.TYPE_AUDIO);
                     }
 
@@ -525,7 +525,8 @@ public class QuestionController {
 
     @RequestMapping(value = "/questions/{questionId}", method = RequestMethod.DELETE)
     public ResponseEntity<Map<String, Object>> deleteQuestion(
-            @PathVariable("questionId") int questionId, @RequestBody Map<String, Object> mapBody) throws IOException {
+            @PathVariable("questionId") int questionId,
+            @RequestBody Map<String, Object> mapBody) throws IOException {
         Question question = QuestionService.findQuestionById(questionId);
         if (question != null) {
             Map<String, Object> m;
@@ -534,14 +535,26 @@ public class QuestionController {
             String managerPassword = (String) mapBody.get("manager_password");
             User manager = UserService.findUserByEmailOrPhone(managerEmailOrPhone);
 
-            if (manager != null
-                    && question.getStudio().getManager().equals(manager)
-                    && managerPassword.equals(manager.getPassword())) {
-                QuestionService.remove(questionId);
-                return new ResponseEntity<Map<String, Object>>(HttpStatus.NO_CONTENT);
+            if (question.getAnswersNumber() > 0) {
+                if (manager != null
+                        && question.getStudio().getManager().equals(manager)
+                        && managerPassword.equals(manager.getPassword())) {
+                    QuestionService.remove(questionId);
+                    return new ResponseEntity<Map<String, Object>>(HttpStatus.NO_CONTENT);
+                } else {
+                    throw new BusinessException("invalid user or password", HttpStatus.UNAUTHORIZED);
+                }
             } else {
-                throw new BusinessException("invalid user or password", HttpStatus.UNAUTHORIZED);
+                if (manager != null
+                        && question.getUser().equals(manager)
+                        && managerPassword.equals(manager.getPassword())) {
+                    QuestionService.remove(questionId);
+                    return new ResponseEntity<Map<String, Object>>(HttpStatus.NO_CONTENT);
+                } else {
+                    throw new BusinessException("invalid user or password", HttpStatus.UNAUTHORIZED);
+                }
             }
+
         } else {
             throw new BusinessException("user not found", HttpStatus.NOT_FOUND);
         }

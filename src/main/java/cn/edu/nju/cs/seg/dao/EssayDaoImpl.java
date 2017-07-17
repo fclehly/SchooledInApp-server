@@ -94,7 +94,7 @@ public class EssayDaoImpl implements EssayDao {
                 session.remove(comment);
             }
             List<SupportEssays> supportEssays = session.createQuery(
-                    "from SupportEssays where essay.id " + id)
+                    "from SupportEssays where essay.id = " + id)
                     .list();
             for (SupportEssays se : supportEssays) {
                 session.remove(se);

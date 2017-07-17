@@ -1,8 +1,10 @@
 package cn.edu.nju.cs.seg.dao;
 
+import cn.edu.nju.cs.seg.pojo.Essay;
 import cn.edu.nju.cs.seg.pojo.Question;
 import cn.edu.nju.cs.seg.pojo.Studio;
 import cn.edu.nju.cs.seg.pojo.User;
+import cn.edu.nju.cs.seg.service.EssayService;
 import cn.edu.nju.cs.seg.service.QuestionService;
 import cn.edu.nju.cs.seg.util.HibernateUtil;
 import org.hibernate.Session;
@@ -31,6 +33,10 @@ public class StudioDaoImpl implements StudioDao {
             List<Question> questions = QuestionService.findQuestionsByStudioId(studioId);
             for (Question question : questions) {
                 QuestionService.remove(question.getId());
+            }
+            List<Essay> essays = EssayService.findEssaysByStudioId(studioId);
+            for (Essay essay : essays) {
+                EssayService.remove(essay.getId());
             }
 //            List<User> members = studio.getUsers();
 //            for (User member : members) {

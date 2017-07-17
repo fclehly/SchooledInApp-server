@@ -1,9 +1,6 @@
 package cn.edu.nju.cs.seg.dao;
 
-import cn.edu.nju.cs.seg.pojo.Answer;
-import cn.edu.nju.cs.seg.pojo.Question;
-import cn.edu.nju.cs.seg.pojo.SupportEssays;
-import cn.edu.nju.cs.seg.pojo.SupportQuestions;
+import cn.edu.nju.cs.seg.pojo.*;
 import cn.edu.nju.cs.seg.service.AnswerService;
 import cn.edu.nju.cs.seg.util.HibernateUtil;
 import org.hibernate.Session;
@@ -24,7 +21,8 @@ public class QuestionDaoImpl implements QuestionDao {
         boolean flag = false;
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-        Question question = (Question) session.createQuery("from Question where id = " + id).uniqueResult();
+        Question question = (Question) session.createQuery("from Question where id = " + id)
+                .uniqueResult();
         if (question != null) {
             List<Answer> answers = session.createQuery(
                     "from Answer where question.id = " + id)
@@ -37,6 +35,12 @@ public class QuestionDaoImpl implements QuestionDao {
                     .list();
             for (SupportQuestions sq : supportQuestions) {
                 session.remove(sq);
+            }
+            List<Notification> notifications = session.createQuery(
+                    "from Notification where question.id = " + id)
+                    .list();
+            for (Notification notification : notifications) {
+                session.remove(notification);
             }
             question.getUser().setQuestionsNumber(question.getUser().getQuestionsNumber() - 1);
             question.getStudio().setQuestionsNumber(question.getStudio().getQuestionsNumber() - 1);

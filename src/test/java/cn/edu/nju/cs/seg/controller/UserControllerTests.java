@@ -1,30 +1,23 @@
 package cn.edu.nju.cs.seg.controller;
 
 import cn.edu.nju.cs.seg.json.JsonMapBuilder;
-import cn.edu.nju.cs.seg.pojo.Studio;
-import cn.edu.nju.cs.seg.pojo.User;
-import cn.edu.nju.cs.seg.pojo.VerificationCode;
-import cn.edu.nju.cs.seg.service.StudioService;
-import cn.edu.nju.cs.seg.service.UserService;
-import cn.edu.nju.cs.seg.service.VerificationCodeService;
+import cn.edu.nju.cs.seg.pojo.*;
+import cn.edu.nju.cs.seg.service.*;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.util.List;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +45,24 @@ public class UserControllerTests {
 
     @Before
     public void setUp() throws Exception {
+        Random random = new Random(System.currentTimeMillis());
+        String name = "";
+        for (int i = 0; i < 6; i++) {
+            name += random.nextInt(10);
+        }
+        User user = new User(name + "@nju.edu.cn", "1234");
+        Studio studio = new Studio(name, user);
+        Question question = new Question(
+                "title", "content", user, studio, Question.TYPE_TEXT);
+        Answer answer = new Answer("content", user, question, Answer.TYPE_TEXT);
+        Essay essay = new Essay("title", "content", studio, Essay.TYPE_TEXT);
+        UserService.add(user);
+        StudioService.add(studio);
+        StudioService.addMember(studio.getId(), user.getId());
+        QuestionService.add(question);
+        AnswerService.add(answer);
+        EssayService.add(essay);
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(userController)
                 .setControllerAdvice(new ExceptionControllerAdvice())
                 .build();
@@ -61,15 +72,18 @@ public class UserControllerTests {
     public void testGetUsersSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
                 .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
+//                .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
     @Test
     public void testGetOneUserSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/" + TEST_USER_ID))
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/" + user.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(TEST_USER_ID))
+                .andExpect(jsonPath("$.id").value(user.getId()))
                 .andExpect(jsonPath("$.name").exists())
                 .andExpect(jsonPath("$.answers").exists())
                 .andExpect(jsonPath("$.questions").exists())
@@ -96,43 +110,55 @@ public class UserControllerTests {
 
     @Test
     public void testGetOneUserQuestionsSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/questions"))
+                .get("/api/users/"+ user.getId() + "/questions"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testGetOneUserAnswersSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/answers"))
+                .get("/api/users/"+ user.getId() + "/answers"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testGetOneUserStudiosSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/studios"))
+                .get("/api/users/"+ user.getId() + "/studios"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testGetOneUserFavoriteQuestionsSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/favorites/questions"))
+                .get("/api/users/"+ user.getId() + "/favorites/questions"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testGetOneUserFavoriteAnswersSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/favorites/answers"))
+                .get("/api/users/"+ user.getId() + "/favorites/answers"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testGetOneUserFavoriteEssaysSuccess() throws Exception {
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
         this.mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/users/"+ TEST_USER_ID + "/favorites/essays"))
+                .get("/api/users/"+ user.getId() + "/favorites/essays"))
                 .andExpect(status().isOk());
     }
 
@@ -175,6 +201,7 @@ public class UserControllerTests {
 
     @Test
     public void testPostOneUserUnauthorized() throws Exception {
+//        User user
         String requestBody = new JsonMapBuilder()
                 .append("email", "TestUser@nju.edu.cn")
                 .append("password", "123456")
@@ -184,7 +211,7 @@ public class UserControllerTests {
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isCreated());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -195,20 +222,21 @@ public class UserControllerTests {
                 .append("question_title", "title")
                 .append("password", user.getPassword())
                 .append("directed_to", studio.getName())
+                .append("type", "text")
                 .toString();
 
-        MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
-
-        InputStream inputStream =
-                this.getClass().getResourceAsStream("/images/ic_launcher.png");
-        URL url = this.getClass().getResource("/images/ic_launcher.png");
-        System.out.println(inputStream == null);
+//        MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
+//
+//        InputStream inputStream =
+//                this.getClass().getResourceAsStream("/images/ic_launcher.png");
+//        URL url = this.getClass().getResource("/images/ic_launcher.png");
+//        System.out.println(inputStream == null);
 //        File file = new File("");
 //        for (String str : file.list()) {
 //            System.out.println(str);
 //        }
 //        FileInputStream fis = new FileInputStream("/images/ic_laucher.png");
-        System.out.println(inputStream.toString());
+//        System.out.println(inputStream.toString());
 //        FileInputStream fis = (FileInputStream) inputStream;
 //        MockMultipartFile multipartFile =
 //                new MockMultipartFile("photopath", "/images/ic_laucher.png",
@@ -220,14 +248,18 @@ public class UserControllerTests {
 //        request.setRequestURI("/api/users/" + TEST_USER_ID + "/questions");
 //        request.addParameter("description", requestBody);
 
-//        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-//                .post("/api/users/" + TEST_USER_ID + "/questions")
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/users/" + TEST_USER_ID + "/questions")
 //                .content(requestBody)
-//                .accept(MediaType.APPLICATION_JSON_VALUE)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("url").exists())
-//                .andReturn();
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+//                .header("ContentType", "multipart/form-data")
+                .param("description", requestBody)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("url").exists())
+                .andReturn();
+
 //        String url = JsonPath.read(result.getResponse().getContentAsString(), "$.url");
 //        int id = Integer.parseInt(url.substring(url.lastIndexOf("/") + 1));
 //        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/questions/" + id))
@@ -238,13 +270,16 @@ public class UserControllerTests {
 
     @Test
     public void testPostOneFavoriteQuestion() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Question> questions = QuestionService.findAllQuestions();
+        Question question = questions.get(0);
         String requestBody = new JsonMapBuilder()
-                .append("question_id", 1)
+                .append("question_id", question.getId())
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/users/" + TEST_USER_ID + "/favorites/questions")
+                .post("/api/users/" + user.getId() + "/favorites/questions")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -253,13 +288,16 @@ public class UserControllerTests {
 
     @Test
     public void testPostOneFavoriteAnswer() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Answer> answers = AnswerService.findAllAnswers();
+        Answer answer = answers.get(0);
         String requestBody = new JsonMapBuilder()
-                .append("answer_id", 1)
+                .append("answer_id", answer.getId())
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/users/" + TEST_USER_ID + "/favorites/answers")
+                .post("/api/users/" + user.getId() + "/favorites/answers")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -268,13 +306,16 @@ public class UserControllerTests {
 
     @Test
     public void testPostOneFavoriteEssay() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Essay> essays = EssayService.findAllEssays();
+        Essay essay = essays.get(0);
         String requestBody = new JsonMapBuilder()
-                .append("essay_id", 1)
+                .append("essay_id", essay.getId())
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/users/" + TEST_USER_ID + "/favorites/essays")
+                .post("/api/users/" + user.getId() + "/favorites/essays")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -295,7 +336,7 @@ public class UserControllerTests {
                 .append("location", "shanghai")
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .put("/api/users/" + TEST_USER_ID + "/favorites/essays")
+                .put("/api/users/" + TEST_USER_ID)
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -313,13 +354,15 @@ public class UserControllerTests {
 
     @Test
     public void testDeleteOneFavoriteQuestions() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
-        UserService.addFavoriteQuestion(TEST_USER_ID, 1);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Question> questions = QuestionService.findAllQuestions();
+        Question question = questions.get(0);
         String requestBody = new JsonMapBuilder()
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/users/" + TEST_USER_ID + "/favorites/questions/1")
+                .delete("/api/users/" + user.getId() + "/favorites/questions/1")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -328,13 +371,15 @@ public class UserControllerTests {
 
     @Test
     public void testDeleteOneFavoriteAnswers() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
-        UserService.addFavoriteAnswer(TEST_USER_ID, 1);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Answer> answers = AnswerService.findAllAnswers();
+        Answer answer = answers.get(0);
         String requestBody = new JsonMapBuilder()
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/users/" + TEST_USER_ID + "/favorites/answers/1")
+                .delete("/api/users/" + user.getId() + "/favorites/answers/1")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -343,13 +388,15 @@ public class UserControllerTests {
 
     @Test
     public void testDeleteOneFavoriteEssays() throws Exception {
-        User user = UserService.findUserById(TEST_USER_ID);
-        UserService.addFavoriteEssays(TEST_USER_ID, 1);
+        List<User> users = UserService.findAllUsers();
+        User user = users.get(0);
+        List<Essay> essays = EssayService.findAllEssays();
+        Essay essay = essays.get(0);
         String requestBody = new JsonMapBuilder()
                 .append("password", user.getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/users/" + TEST_USER_ID + "/favorites/essays/1")
+                .delete("/api/users/" + user.getId() + "/favorites/essays/1")
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))

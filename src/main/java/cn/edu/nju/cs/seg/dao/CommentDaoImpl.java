@@ -2,6 +2,7 @@ package cn.edu.nju.cs.seg.dao;
 
 import cn.edu.nju.cs.seg.pojo.Comment;
 
+import cn.edu.nju.cs.seg.pojo.Notification;
 import cn.edu.nju.cs.seg.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -72,6 +73,12 @@ public class CommentDaoImpl implements CommentDao {
                 session.update(comment.getEssay());
             }
             session.delete(comment);
+            List<Notification> notifications = session.createQuery(
+                    "from Notification where comment.id = " + id)
+                    .list();
+            for (Notification notification : notifications) {
+                session.remove(notification);
+            }
             flag = true;
         }
         session.getTransaction().commit();

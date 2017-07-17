@@ -21,7 +21,7 @@ public class MediaController {
         if (avatarId == 1 || avatar == null) { //默认头像
             return ServerConfig.AVATAR_DIR + "1.png";
         } else {
-            return ServerConfig.AVATAR_DIR + "/avatars/" + avatar.getMd5() + "." + avatar.getSuffix();
+            return ServerConfig.AVATAR_DIR + avatar.getMd5() + "." + avatar.getSuffix();
         }
     }
 }

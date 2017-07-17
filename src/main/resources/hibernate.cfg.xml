@@ -33,7 +33,6 @@
         <!--缓存Statement对象的数量-->
         <property name="c3p0.max_statements">20</property>
 
-
         <!--以下两个配置项对mysql无效,对oracle有效,有显著的性能提升-->
         <!--设定JDBC的statement读取数据的时候的每次从数据库中取出的记录条数,100 是最合适的 -->
         <property name="hibernate.jdbc.fetch_size">100</property>
@@ -47,7 +46,6 @@
 
 
         <!--DB schema will be updated if needed -->
-
         <property name="hbm2ddl.auto">update</property>
 
 

@@ -322,7 +322,7 @@ public class StartupListener {
         System.out.println("       Init Data.....");
         System.out.println("----------------------------------");
         if (ServerConfig.INIT_DATA && UserService.findAllUsers().size() == 0) {
-            ServerConfig.NOTIFICATION = false;
+//            ServerConfig.NOTIFICATION = false;
             //add users
             Random random = new Random(System.currentTimeMillis());
             for (int i = 0; i < usernames.length; i++) {

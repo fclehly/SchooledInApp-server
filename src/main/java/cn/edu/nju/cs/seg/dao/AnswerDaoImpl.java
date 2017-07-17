@@ -2,6 +2,8 @@ package cn.edu.nju.cs.seg.dao;
 
 import cn.edu.nju.cs.seg.pojo.Answer;
 import cn.edu.nju.cs.seg.pojo.Comment;
+import cn.edu.nju.cs.seg.pojo.Notification;
+import cn.edu.nju.cs.seg.service.CommentService;
 import cn.edu.nju.cs.seg.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,7 +30,14 @@ public class AnswerDaoImpl implements AnswerDao {
                     "from Comment where answer.id = " + id)
                     .list();
             for (Comment comment : comments) {
-                session.remove(comment);
+                CommentService.remove(comment.getId());
+//                session.remove(comment);
+            }
+            List<Notification> notifications = session.createQuery(
+                    "from Notification where answer.id = " + id)
+                    .list();
+            for (Notification notification : notifications) {
+                session.remove(notification);
             }
 
             answer.getQuestion().setAnswersNumber(answer.getQuestion().getAnswersNumber() - 1);

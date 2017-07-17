@@ -53,7 +53,7 @@ public class ServerConfig {
 
     public static final String AVATARS_BASE_URL =
             SERVER_BASE_PROTOCOL + "://"
-                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + SERVER_PACKAGE + "/audios/";
+                    + SERVER_BASE_HOME + ":" + SERVER_BASE_PORT + SERVER_PACKAGE + "/avatars/";
 
     public static final String AVATAR_DIR =
             "/avatars/";

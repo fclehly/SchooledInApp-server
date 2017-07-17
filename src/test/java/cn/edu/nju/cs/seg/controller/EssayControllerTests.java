@@ -1,8 +1,8 @@
 package cn.edu.nju.cs.seg.controller;
 
 import cn.edu.nju.cs.seg.json.JsonMapBuilder;
-import cn.edu.nju.cs.seg.pojo.Essay;
-import cn.edu.nju.cs.seg.service.EssayService;
+import cn.edu.nju.cs.seg.pojo.*;
+import cn.edu.nju.cs.seg.service.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,14 +31,31 @@ public class EssayControllerTests {
     private static final int TEST_COMMENT_ID = 1;
 
     @Autowired
-    private CommentController commentController;
+    private EssayController essayController;
 
     private MockMvc mockMvc;
 
     @Before
     public void setUp() throws Exception {
+        Random random = new Random(System.currentTimeMillis());
+        String name = "";
+        for (int i = 0; i < 6; i++) {
+            name += random.nextInt(10);
+        }
+        User user = new User(name + "@nju.edu.cn", "1234");
+        Studio studio = new Studio(name, user);
+        Question question = new Question(
+                "title", "content", user, studio, Question.TYPE_TEXT);
+        Answer answer = new Answer("content", user, question, Answer.TYPE_TEXT);
+        Essay essay = new Essay("title", "content", studio, Essay.TYPE_TEXT);
+        UserService.add(user);
+        StudioService.add(studio);
+        StudioService.addMember(studio.getId(), user.getId());
+        QuestionService.add(question);
+        AnswerService.add(answer);
+        EssayService.add(essay);
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(commentController)
+                .standaloneSetup(essayController)
                 .setControllerAdvice(new ExceptionControllerAdvice())
                 .build();
     }
@@ -73,14 +93,32 @@ public class EssayControllerTests {
     }
 
     @Test
-    public void testDeleteOneEssay() throws Exception {
-        Essay essay = EssayService.findEssayById(2);
+    public void testPostOneEssaySupport() throws Exception {
+
+        List<Essay> essays = EssayService.findAllEssays();
+        Essay essay = essays.get(0);
         String requestBody = new JsonMapBuilder()
-                .append("manager_email_or_phone", essay.getStudio().getManager().getEmail())
-                .append("manager_password", essay.getStudio().getManager().getPassword())
+                .append("supporter_email_or_phone", essay.getStudio().getManager().getEmail())
+                .append("supporter_password", essay.getStudio().getManager().getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/essays/" + 2)
+                .post("/api/essays/" + essay.getId() + "/supports")
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testDeleteOneEssay() throws Exception {
+        List<Essay> essays = EssayService.findAllEssays();
+        Essay essay = essays.get(0);
+        String requestBody = new JsonMapBuilder()
+                .append("studio_manager_email_or_phone", essay.getStudio().getManager().getEmail())
+                .append("studio_manager_password", essay.getStudio().getManager().getPassword())
+                .toString();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                .delete("/api/essays/" + essay.getId())
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))

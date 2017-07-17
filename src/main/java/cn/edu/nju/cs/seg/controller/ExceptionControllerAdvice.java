@@ -22,7 +22,6 @@ public class ExceptionControllerAdvice {
         Map<String, Object> map = ErrorResponseMapBuilder.build(e.getMsg());
         System.out.println("ERROR MESSAGE: " + e.getMsg());
         logger.error("ERROR MESSAGE: " + e.getMsg());
-//        logger.log();
         return new ResponseEntity<Map<String, Object>>(map, e.getHttpStatus());
 
     }

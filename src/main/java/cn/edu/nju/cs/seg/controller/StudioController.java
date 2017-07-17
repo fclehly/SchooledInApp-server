@@ -199,7 +199,7 @@ public class StudioController {
             if (oldManager != null && newManager != null
                     && oldManagerPassword != null
                     && oldManagerPassword.equals(oldManager.getPassword())
-                    && newManager.equals(studio.getManager())
+                    && oldManager.equals(studio.getManager())
                     && newManagerPassword != null
                     && newManagerPassword.equals(newManager.getPassword())
                     && oldMembers.contains(newManager)) {
@@ -227,7 +227,7 @@ public class StudioController {
                         .getMap();
                 return new ResponseEntity<Map<String, Object>>(m, HttpStatus.NO_CONTENT);
             } else {
-                throw new BusinessException("Invalid email/phone or password", HttpStatus.NOT_FOUND);
+                throw new BusinessException("Invalid email/phone or password", HttpStatus.UNAUTHORIZED);
             }
         } else {
             throw new BusinessException("Studio not found", HttpStatus.NOT_FOUND);

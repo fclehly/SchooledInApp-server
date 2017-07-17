@@ -529,8 +529,8 @@ public class UserController {
                 && password != null && password.length() > 0) {
             VerificationCode code = VerificationCodeService.findCodeByEmailOrPhone(email);
             String verificationCode = (String) bodyMap.get("verification_code");
-            System.out.println(verificationCode);
-            System.out.println(code.getCode());
+//            System.out.println(verificationCode);
+//            System.out.println(code.getCode());
             if (code != null
                     && verificationCode != null
                     && verificationCode.length() > 0

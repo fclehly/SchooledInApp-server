@@ -1,8 +1,8 @@
 package cn.edu.nju.cs.seg.controller;
 
 import cn.edu.nju.cs.seg.json.JsonMapBuilder;
-import cn.edu.nju.cs.seg.pojo.Answer;
-import cn.edu.nju.cs.seg.service.AnswerService;
+import cn.edu.nju.cs.seg.pojo.*;
+import cn.edu.nju.cs.seg.service.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +37,23 @@ public class AnswerControllerTests {
 
     @Before
     public void setUp() throws Exception {
+        Random random = new Random(System.currentTimeMillis());
+        String name = "";
+        for (int i = 0; i < 6; i++) {
+            name += random.nextInt(10);
+        }
+        User user = new User(name + "@nju.edu.cn", "1234");
+        Studio studio = new Studio(name, user);
+        Question question = new Question(
+                "title", "content", user, studio, Question.TYPE_TEXT);
+        Answer answer = new Answer("content", user, question, Answer.TYPE_TEXT);
+        Essay essay = new Essay("title", "content", studio, Essay.TYPE_TEXT);
+        UserService.add(user);
+        StudioService.add(studio);
+        StudioService.addMember(studio.getId(), user.getId());
+        QuestionService.add(question);
+        AnswerService.add(answer);
+        EssayService.add(essay);
         this.mockMvc = MockMvcBuilders.standaloneSetup(answerController)
                 .setControllerAdvice(new ExceptionControllerAdvice())
                 .build();
@@ -42,9 +62,12 @@ public class AnswerControllerTests {
 
     @Test
     public void testGetOneAnswerSuccess() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/answers/" + TEST_ANSWER_ID))
+        List<Answer> answers = AnswerService.findAllAnswers();
+        Answer answer = answers.get(0);
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/answers/" + answer.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(TEST_ANSWER_ID))
+                .andExpect(jsonPath("$.id").value(answer.getId()))
                 .andExpect(jsonPath("$.answerer").exists())
                 .andExpect(jsonPath("$.content").exists())
                 .andExpect(jsonPath("$.question_title").exists())
@@ -60,19 +83,45 @@ public class AnswerControllerTests {
 
     @Test
     public void testGetOneAnswerNotFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/0"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/answers/0"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    public void testGetAnswerComments() throws Exception {
+        List<Answer> answers = AnswerService.findAllAnswers();
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/answers/" + answers.get(0).getId() + "/comments"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPostAnswerComment() throws Exception {
+        List<Answer> answers = AnswerService.findAllAnswers();
+        Answer answer = answers.get(0);
+        String requestBody = new JsonMapBuilder()
+                .append("commenter_email_or_phone", answer.getAnswerer().getEmail())
+                .append("commenter_password", answer.getAnswerer().getPassword())
+                .append("content", "content")
+                .toString();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/answers/" + answer.getId() + "/comments")
+                .content(requestBody)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
     public void testDeleteOneAnswer() throws Exception {
-        Answer answer = AnswerService.findAnswerById(2);
+        List<Answer> answers = AnswerService.findAllAnswers();
+        Answer answer = answers.get(0);
         String requestBody = new JsonMapBuilder()
                 .append("answerer_email_or_phone", answer.getAnswerer().getEmail())
                 .append("answerer_password", answer.getAnswerer().getPassword())
                 .toString();
         this.mockMvc.perform(MockMvcRequestBuilders
-                .delete("/api/answers/" + 2)
+                .delete("/api/answers/" + answer.getId())
                 .content(requestBody)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
